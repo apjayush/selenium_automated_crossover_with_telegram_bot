@@ -10,6 +10,8 @@ import json
 import telebot
 from dotenv import load_dotenv
 import os
+from datetime import datetime
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -49,7 +51,7 @@ def run_script():
         user_id_input.clear()
         user_id_input.send_keys(username)  # Replace with your actual User ID
 
-        time.sleep(1)
+        time.sleep(2)
 
         password_input = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "password"))  # Replace with actual Password input field ID
@@ -57,7 +59,7 @@ def run_script():
         password_input.clear()
         password_input.send_keys(password)  # Replace with your actual Password
 
-        time.sleep(1)
+        time.sleep(2)
 
         # Example: Click the login button after entering credentials
         login_button = WebDriverWait(driver, 10).until(
@@ -65,7 +67,7 @@ def run_script():
         )
         login_button.click()
 
-        time.sleep(1)
+        time.sleep(2)
 
         # Wait for the TOTP input field
         totp_input = WebDriverWait(driver, 10).until(
@@ -76,7 +78,7 @@ def run_script():
         totp = pyotp.TOTP(totp_secret)
         totp_code = totp.now()
 
-        time.sleep(1)
+        time.sleep(2)
         # Enter TOTP code into the input field
         totp_input.clear()
         totp_input.send_keys(totp_code)
@@ -113,7 +115,7 @@ def run_script():
         print("Button found, clicking on it...")
         button.click()
 
-        time.sleep(5)
+        time.sleep(2)
 
         try:
             # Find the tbody element
@@ -148,7 +150,7 @@ def run_script():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    time.sleep(5)
+    time.sleep(2)
 
     # Print the title of the webpage
     print(driver.title)
@@ -156,4 +158,15 @@ def run_script():
     # Close the browser
     driver.quit()
 
-run_script()
+def schedule_task():
+    now = datetime.now()
+    if 23 <= now.hour < 24:
+        run_script()
+
+# Schedule the task to run every 30 minutes
+schedule.every(1).minutes.do(schedule_task)
+
+# Run the scheduler
+while True:
+    schedule.run_pending()
+    time.sleep(1)
